@@ -23,7 +23,7 @@ public class Orientation extends AcademicProduction{
 			return "\nId: " + getId() + "\nTítulo: " + getTitle() + "\nAutores: " + getAuthors();
 		}
 		else {
-			return "\nId: " + getId() + "\nTítulo: " + getTitle() + "Sem autores.";
+			return "\nId: " + getId() + "\nTítulo: " + getTitle() + "\nSem autores.";
 		}
 	}
 	

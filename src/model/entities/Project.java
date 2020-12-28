@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import model.enums.StatusProject;
+import model.exceptions.DomainException;
 
 public class Project implements Comparable<Project>{
 
@@ -22,10 +23,13 @@ public class Project implements Comparable<Project>{
 	private ArrayList<Collaborator> collaborators = new ArrayList<Collaborator>();
 	private ArrayList<Publication> publications = new ArrayList<Publication>();
 	
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	public Project(int id, String title, Date start, Date finish, String fundingAgency, Double amount, String objective,
-			String description, StatusProject status) {
+			String description, StatusProject status) throws DomainException {
+		if(!finish.after(start)) {
+			throw new DomainException("A data de término deve ser depois da data de início.");
+		}
 		this.id = id;
 		this.title = title;
 		this.start = start;

@@ -38,9 +38,11 @@ public class Menu {
 				+ "==> ");
 	}
 	
-	public static void clearScreen() {
-		System.out.println("\033[H\033[2J");
-		System.out.flush();
+	public static void showMenuStatus() {
+		System.out.print("Alterar status: \n"
+				+ "[1] Continuar\n"
+				+ "[0] Sair\n"
+				+ "==> ");
 	}
 	
 }

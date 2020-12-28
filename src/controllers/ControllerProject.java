@@ -13,51 +13,65 @@ import model.entities.Publication;
 import model.entities.Student;
 import model.enums.StatusProject;
 import model.enums.TypeStudent;
+import model.exceptions.DomainException;
+import views.Menu;
+import views.Utility;
 
 public class ControllerProject {
 	
-	Scanner sc = new Scanner(System.in);
-	Random rd = new Random();
+	private static Scanner sc = new Scanner(System.in);
+	private static Random rd = new Random();
 	
-	SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	protected ArrayList<Project> projects = new ArrayList<Project>();
 
-	public void register() throws ParseException {
-		System.out.print("Título: ");
-		String title = sc.nextLine();
-		System.out.print("Data de início (dd/MM/yyyy): ");
-		Date start = sdf.parse(sc.nextLine());
-		System.out.print("Data de término (dd/MM/yyyy): ");
-		Date finish = sdf.parse(sc.nextLine());
-		System.out.print("Agência financiadora: ");
-		String agency = sc.nextLine();
-		System.out.print("Valor financiado: ");
-		double amount = sc.nextDouble();
-		sc.nextLine();
-		System.out.print("Objetivo: ");
-		String objective = sc.nextLine();
-		System.out.print("Descrição: ");
-		String description = sc.nextLine();
-		int id = rd.nextInt(1000);
-		while(checkId(id)) {
-			id = rd.nextInt();
+	public void register(){
+		try {
+			System.out.print("Título: ");
+			String title = sc.nextLine();
+			System.out.print("Data de início (dd/MM/yyyy): ");
+			Date start = sdf.parse(sc.nextLine());
+			System.out.print("Data de término (dd/MM/yyyy): ");
+			Date finish = sdf.parse(sc.nextLine());
+			System.out.print("Agência financiadora: ");
+			String agency = sc.nextLine();
+			System.out.print("Valor financiado: ");
+			double amount = Double.parseDouble(sc.nextLine());
+			System.out.print("Objetivo: ");
+			String objective = sc.nextLine();
+			System.out.print("Descrição: ");
+			String description = sc.nextLine();
+			int id = rd.nextInt(1000);
+			while(haveId(id)) {
+				id = rd.nextInt();
+			}
+			Project project = new Project(id, title, start, finish, agency, amount, objective, description, StatusProject.IN_PREPARATION);
+			projects.add(project);
+			System.out.println(project);
+			System.out.println("\nO projeto foi cadastrado com sucesso!");
 		}
-		Project project = new Project(id, title, start, finish, agency, amount, objective, description, StatusProject.IN_PREPARATION);
-		projects.add(project);
-		System.out.println(project);
-		System.out.println("\nO projeto foi cadastrado com sucesso!");
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(ParseException e) {
+			System.out.println("\nErro: Formato de data inválido.");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
-	public void editProjectInformation() throws ParseException {
-		print();
-		System.out.print("Informe o id do projeto: ");
-		int id = sc.nextInt();
-		sc.nextLine();
-		Project project = findProject(id);
-		if(checkId(id)) {
+	public void editProjectInformation(){
+		try {
+			print();
+			System.out.print("Informe o id do projeto: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
+			Project project = findProject(id);
 			System.out.print("Título: ");
 			String title = sc.nextLine();
 			project.setTitle(title);
@@ -71,8 +85,7 @@ public class ControllerProject {
 			String agency = sc.nextLine();
 			project.setFundingAgency(agency);
 			System.out.print("Valor financiado: ");
-			double amount = sc.nextDouble();
-			sc.nextLine();
+			double amount = Double.parseDouble(sc.nextLine());
 			project.setAmount(amount);
 			System.out.print("Objetivo: ");
 			String objective = sc.nextLine();
@@ -82,22 +95,85 @@ public class ControllerProject {
 			project.setDescription(description);
 			System.out.println(project);
 			System.out.println("\nOs dados do projeto foram alterados.");
-		}else {
-			System.out.println("\nId não foi encontrado.");
 		}
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(ParseException e) {
+			System.out.println("\nErro: Formato de data inválido.");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
+	}
+	
+	public void statusChange() {
+		try {
+			print();
+			System.out.print("Id do projeto: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
+			Project project = findProject(id);
+			System.out.println("\nStatus atual: " + project.getStatus().getStatusProject());
+			Menu.showMenuStatus();
+			int type = Integer.parseInt(sc.nextLine());
+			checkType(type);
+			switch(type) {
+				case 1:
+					if(checkInformation(project)) {
+						System.out.println("\nInformações básicas incompletas.");
+					}
+					else {
+						if(project.getStatus() == StatusProject.IN_PREPARATION) {
+							if(studentMore2InProgress(project)) {
+								System.out.println("\nO estudante do Id:" + IdStudentMore2InProgress(project) + " possui 2 projetos \"Em andamento\". "
+										+ "\nPara alterar o status do projeto atual é necessário que remova o estudante especificado.");
+							}else {
+								project.setStatus(StatusProject.IN_PROCESS);
+								System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
+							}
+						}
+						else if(project.getStatus() == StatusProject.IN_PROCESS) {
+							if(project.getPublications().size() > 0) {
+								project.setStatus(StatusProject.CONCLUDED);
+								System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
+							}else {
+								System.out.println("\nNão é possível alterar status do projeto para \"Concluído\". "
+										+ "\nAssocie pelo menos uma publicação ao projeto.");
+							}
+						}	
+					}
+					break;
+				case 0:
+					System.out.println("O programa irá retornar para o menu inicial.");
+					break;
+			}
+
+		}
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
 	public void allocationOfParticipants(ControllerCollaborator controllerCollaborator) {
-		print();
-		controllerCollaborator.print();
-		System.out.print("Id do projeto: ");
-		int id = sc.nextInt();
-		System.out.print("Id do colaborador a ser alocado: ");
-		int idc = sc.nextInt();
-		sc.nextLine();
-		if(checkId(id) && controllerCollaborator.checkId(idc)) {
+		try {
+			print();
+			controllerCollaborator.print();
+			System.out.print("Id do projeto: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
+			System.out.print("Id do colaborador a ser alocado: ");
+			int idc = Integer.parseInt(sc.nextLine());
+			controllerCollaborator.checkId(idc);
 			Project project = findProject(id);
 			if(project.getStatus() == StatusProject.IN_PREPARATION) {
 				Collaborator collaborator = controllerCollaborator.findCollaborator(idc);
@@ -124,66 +200,28 @@ public class ControllerProject {
 			else {
 				System.out.println("\nNão é possível adicionar colaboradores depois que o status do projeto é alterado para \"Em andamento\".");
 			}
-		}else {
-			System.out.println("\nId do projeto ou do colaborador não foi encontrado.");
 		}
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
-	}
-	
-	public void statusChange() {
-		print();
-		System.out.print("Id do projeto: ");
-		int id = sc.nextInt();
-		sc.nextLine();
-		if(checkId(id)) {
-			Project project = findProject(id);
-			System.out.println("\nStatus atual: " + project.getStatus().getStatusProject());
-			System.out.print("Alterar status(s/n)? ");
-			char c = sc.next().charAt(0);
-			sc.nextLine();
-			if(c == 's') {
-				if(checkInformation(project) && project.getCollaborators().size() > 0) {
-					System.out.println("\nInformações básicas incompletas.");
-				}
-				else {
-					if(project.getStatus() == StatusProject.IN_PREPARATION) {
-						if(studentMore2InProgress(project)) {
-							System.out.println("\nO estudante do Id:" + IdStudentMore2InProgress(project) + " possui 2 projetos \"Em andamento\". "
-									+ "\nPara alterar o status do projeto atual é necessário que remova o estudante especificado.");
-						}else {
-							project.setStatus(StatusProject.IN_PROCESS);
-							System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
-						}
-					}
-					else if(project.getStatus() == StatusProject.IN_PROCESS) {
-						if(project.getPublications().size() > 0) {
-							project.setStatus(StatusProject.CONCLUDED);
-							System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
-						}else {
-							System.out.println("\nNão é possível alterar status do projeto para \"Concluído\". "
-									+ "\nAssocie pelo menos uma publicação ao projeto.");
-						}
-						
-					}	
-				}
-			}
-		}else {
-			System.out.println("\nId não foi encontrado.");
-		}	
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
 	public void associatePublication(ControllerAcademicProduction controllerAcademicProduction) {
-		print();
-		controllerAcademicProduction.printPublications();
-		System.out.print("Id do projeto: ");
-		int id = sc.nextInt();
-		System.out.print("Id da publicação: ");
-		int idP = sc.nextInt();
-		sc.nextLine();
-		if(checkId(id) && controllerAcademicProduction.checkIdPublication(idP)) {
+		try {
+			print();
+			controllerAcademicProduction.printPublications();
+			System.out.print("Id do projeto: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
+			System.out.print("Id da publicação: ");
+			int idP = Integer.parseInt(sc.nextLine());
+			controllerAcademicProduction.checkIdPublication(idP);
 			Project project = findProject(id);
 			if(havePublication(project, idP)) {
 				System.out.println("\nA publicação já está associada ao projeto.");
@@ -193,75 +231,93 @@ public class ControllerProject {
 				publication.setProject(project);
 				System.out.println("\nA publicação foi associada ao projeto.");
 			}	
-		}else {
-			System.out.println("\nId do projeto ou da publicação não foi encontrado.");
-		}	
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		}
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
 	public void consultProject() {
-		System.out.print("Id do projeto: ");
-		int id = sc.nextInt();
-		sc.nextLine();
-		if(checkId(id)) {
+		try {
+			print();
+			System.out.print("Id do projeto: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
 			Project project = findProject(id);
 			SortByDate.sortPublication(project.getPublications());
 			System.out.println(project + "\n");
 			if(project.getCollaborators().size()>0) {
 				int k=1;
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				for(int i=0; i<project.getCollaborators().size(); i++) {
 					System.out.print("Colaborador #" + k);
 					System.out.println(project.getCollaborators().get(i) + "\n");
 					k++;
 				}
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}else {
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				System.out.println("Sem colaboradores.");
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}
 			if(project.getPublications().size()>0) {
 				int l=1;
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				for(int i=0; i<project.getPublications().size(); i++) {
 					System.out.print("Publicação #" + l);
 					System.out.println(project.getPublications().get(i) + "\n");
 					l++;
 				}
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}else {
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				System.out.println("Sem publicações.");
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}
-		}else {
-			System.out.println("\nId foi não encontrado.");
 		}
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
 	public void removeCollaborator(ControllerCollaborator controllerCollaborator) {
-		print();
-		controllerCollaborator.print();
-		System.out.print("Id do projeto: ");
-		int id = sc.nextInt();
-		System.out.print("Id do colaborador a ser removido: ");
-		int idc = sc.nextInt();
-		sc.nextLine();
-		if(checkId(id) && controllerCollaborator.checkId(idc)) {
+		try {
+			print();
+			controllerCollaborator.print();
+			System.out.print("Id do projeto: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
+			System.out.print("Id do colaborador a ser removido: ");
+			int idC = Integer.parseInt(sc.nextLine());
+			controllerCollaborator.checkId(idC);
 			Project project = findProject(id);
-			Collaborator collaborator = controllerCollaborator.findCollaborator(idc);
+			Collaborator collaborator = controllerCollaborator.findCollaborator(idC);
 			project.removeCollaborator(collaborator);
 			collaborator.removeProject(project);
 			System.out.println("\nColaborador foi removido.");
-		}else {
-			System.out.println("\nId do projeto ou do colaborador não foi encontrado.");
+			
 		}
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
 	public boolean studentMore2InProgress(Project project) {
@@ -287,7 +343,6 @@ public class ControllerProject {
 						return student.getId();
 					}
 				}
-
 			}
 		}
 		return 0;
@@ -323,7 +378,6 @@ public class ControllerProject {
 	
 	public int numberOfInPreparation() {
 		int in_preparation = 0;
-		
 		for(Project j : projects) {
 			if(j.getStatus() == StatusProject.IN_PREPARATION) {
 				in_preparation+=1;
@@ -334,7 +388,6 @@ public class ControllerProject {
 	
 	public int numberOfInProcess() {
 		int in_process = 0;
-		
 		for(Project j : projects) {
 			if(j.getStatus() == StatusProject.IN_PROCESS) {
 				in_process+=1;
@@ -345,7 +398,6 @@ public class ControllerProject {
 	
 	public int numberOfConcluded() {
 		int concluded = 0;
-		
 		for(Project j : projects) {
 			if(j.getStatus() == StatusProject.CONCLUDED) {
 				concluded+=1;
@@ -370,13 +422,29 @@ public class ControllerProject {
 		return false;
 	}
 	
-	public boolean checkId(int id) {
+	public boolean checkId(int id) throws DomainException {
+		for(Project p : projects) {
+			if(p.getId() == id) {
+				return true;
+		    }
+		}
+		throw new DomainException("Id do projeto inválido.");
+	}
+	
+	public boolean haveId(int id){
 		for(Project p : projects) {
 			if(p.getId() == id) {
 				return true;
 		    }
 		}
 		return false;
+	}
+	
+	public boolean checkType(int type) throws DomainException {
+		if(type == 0 || type == 1) {
+			return true;
+		}
+		throw new DomainException("Opção inválida.");
 	}
 	
 	public void print() {

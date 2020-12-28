@@ -8,35 +8,46 @@ import model.entities.Collaborator;
 import model.entities.Student;
 import model.entities.Teacher;
 import model.enums.TypeStudent;
+import model.exceptions.DomainException;
 import views.Menu;
+import views.Utility;
 
 public class ControllerCollaborator {
 	
-	Scanner sc = new Scanner(System.in);
-	Random rd = new Random();
+	private static Scanner sc = new Scanner(System.in);
+	private static Random rd = new Random();
 	
 	protected ArrayList<Collaborator> collaborators = new ArrayList<Collaborator>();
 	
 	public void register() {
-		Menu.showMenuCollaborator();
-		int type = sc.nextInt();
-		sc.nextLine();
-		System.out.print("Nome: ");
-		String name = sc.nextLine();
-		System.out.print("e-mail: ");
-		String email = sc.nextLine();
-		int id = rd.nextInt(1000);
-		while(checkId(id)) {
-			id = rd.nextInt();
+		try {
+			Menu.showMenuCollaborator();
+			int type = Integer.parseInt(sc.nextLine());
+			checkType(type);
+			System.out.print("Nome: ");
+			String name = sc.nextLine();
+			System.out.print("e-mail: ");
+			String email = sc.nextLine();
+			int id = rd.nextInt(1000);
+			while(haveId(id)) {
+				id = rd.nextInt();
+			}
+			typeCollaborator(type, id, name, email);
+			System.out.println(findCollaborator(id));
+			System.out.println("\nColaborador foi cadastrado com sucesso!");
 		}
-		typeCollaborator(type, id, name, email);
-		System.out.println(findCollaborator(id));
-		System.out.println("\nColaborador foi cadastrado com sucesso!");
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: Opção inválida.");
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Opção inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
-	public boolean typeCollaborator(int type, int id, String name, String email) {
+	public void typeCollaborator(int type, int id, String name, String email) {
 		Collaborator collaborator = null;
 		switch(type) {
 			case 1:
@@ -56,69 +67,74 @@ public class ControllerCollaborator {
 				break;
 		}
 		collaborators.add(collaborator);
-		return true;
 	}
 
 	public void consultCollaborator() {
-		System.out.print("Id do colaborador: ");
-		int id = sc.nextInt();
-		sc.nextLine();
-		if(checkId(id)) {
+		try {
+			print();
+			System.out.print("Id do colaborador: ");
+			int id = Integer.parseInt(sc.nextLine());
+			checkId(id);
 			Collaborator collaborator = findCollaborator(id);
 			SortByDate.sortProject(collaborator.getProject());
 			SortByDate.sortPublication(collaborator.getPublications());
 			System.out.println(collaborator + "\n");
 			if(collaborator.getProject().size() > 0) {
 				int k=1;
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				for(int i=0; i<collaborator.getProject().size(); i++) {
 					System.out.print("Projeto #" + k);
 					System.out.println(collaborator.getProject().get(i) + "\n");
 					k++;
 				}
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}else {
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				System.out.println("Sem projetos.");
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}
 			if(collaborator.getPublications().size() > 0) {
 				int l=1;
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				for(int i=0; i<collaborator.getPublications().size(); i++) {
 					System.out.print("Publicação #" + l);
 					System.out.println(collaborator.getPublications().get(i) + "\n");
 					l++;
 				}
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}else {
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 				System.out.println("Sem publicações.");
-				System.out.println("-----------------------------");
+				System.out.println("------------------------------------");
 			}
 
 			if(collaborator instanceof Teacher) {
 				Teacher teacher = (Teacher)collaborator;
 				if(teacher.getOrientations().size() > 0) {
 					int m=1;
-					System.out.println("-----------------------------");
+					System.out.println("------------------------------------");
 					for(int i=0; i<teacher.getOrientations().size(); i++) {
 						System.out.print("Orientação #" + m);
 						System.out.println(teacher.getOrientations().get(i) + "\n");
 						m++;
 					}
-					System.out.println("-----------------------------");
+					System.out.println("------------------------------------");
 				}else {
-					System.out.println("-----------------------------");
+					System.out.println("------------------------------------");
 					System.out.println("Sem orientações.");
-					System.out.println("-----------------------------");
+					System.out.println("------------------------------------");
 				}
 			}
-		}else {
-			System.out.println("\nId não encontrado.");
 		}
-		System.out.println("Pressione ENTER para continuar.");
-		sc.nextLine();
+		catch(DomainException e) {
+			System.out.println("\nErro: " + e.getMessage());
+		}
+		catch(NumberFormatException e) {
+			System.out.println("\nErro: Entrada inválida.");
+		}
+		finally {
+			Utility.enter();
+		}
 	}
 	
 	public Collaborator findTeacher(int id) {
@@ -154,7 +170,23 @@ public class ControllerCollaborator {
 		return false;
 	}
 	
-	public boolean checkId(int id) {
+	public boolean checkId(int id) throws DomainException {
+		for(Collaborator c : collaborators) {
+			if(c.getId() == id) {
+				return true;
+			}
+		}
+		throw new DomainException("Id do colaborador inválido.");
+	}
+	
+	public boolean checkType(int type) throws DomainException {
+		if(type >= 1 && type <= 5) {
+			return true;
+		}
+		throw new DomainException("Opção inválida.");
+	}
+	
+	public boolean haveId(int id){
 		for(Collaborator c : collaborators) {
 			if(c.getId() == id) {
 				return true;

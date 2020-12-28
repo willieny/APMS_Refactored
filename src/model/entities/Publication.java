@@ -9,7 +9,7 @@ public class Publication extends AcademicProduction implements Comparable<Public
 	private Date yearPublication;
 	private Project project;
 	
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+	private static  SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
 	
 	public Publication(int id, String title, String conference, Date yearPublication) {
 		super(id, title);

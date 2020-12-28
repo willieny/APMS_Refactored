@@ -1,83 +1,91 @@
 package controllers;
 
-import java.text.ParseException;
 import java.util.Scanner;
 
 import views.Menu;
+import views.Utility;
 
 public class ManagementSystem {
 	
-	Scanner sc = new Scanner(System.in);
+	private static Scanner sc = new Scanner(System.in);
 	
-	ControllerCollaborator controllerCollaborator = new ControllerCollaborator();
-	ControllerProject controllerProject = new ControllerProject();
-	ControllerAcademicProduction controllerAcademic = new ControllerAcademicProduction();
+	private ControllerCollaborator controllerCollaborator = new ControllerCollaborator();
+	private ControllerProject controllerProject = new ControllerProject();
+	private ControllerAcademicProduction controllerAcademic = new ControllerAcademicProduction();
 	
-	public void MainSystem() throws ParseException {
+	public void MainSystem(){
 		boolean sair = false;
 		int option;
 		while(!sair){
-			Menu.clearScreen();
-			Menu.showMenu();
-			option = sc.nextInt();
-			switch(option) {
-				case 1:
-					controllerCollaborator.register();
-					break;
-				case 2:
-					controllerProject.register();
-					break;
-				case 3:
-				    controllerAcademic.register(controllerCollaborator);
-					break;	
-				case 4:
-					controllerProject.editProjectInformation();
-					break;
-				case 5:
-					controllerProject.statusChange();
-					break;
-				case 6:
-					controllerProject.allocationOfParticipants(controllerCollaborator);
-					break;
-				case 7:
-					controllerAcademic.allocationOfAuthors(controllerCollaborator);
-					break;
-				case 8:
-					controllerProject.associatePublication(controllerAcademic);;
-					break;
-				case 9: 
-					controllerProject.removeCollaborator(controllerCollaborator);
-					break;
-				case 10: 
-					controllerCollaborator.consultCollaborator();
-					break;
-				case 11:
-					controllerProject.consultProject();
-					break;
-				case 12:
-					System.out.println("#----------- Relatório de produções do laboratório -----------#");
-					System.out.println("| Número de colaboradores: " + controllerCollaborator.collaborators.size() 
-					+ "                                  |");
-					System.out.println("| Número de projetos em elaboração: " + controllerProject.numberOfInPreparation()
-					+ "                         |");
-					System.out.println("| Número de projetos em andamento: " + controllerProject.numberOfInProcess()
-					+ "                          |");
-					System.out.println("| Número de projetos concluídos: " + controllerProject.numberOfConcluded() 
-					+ "                            |");
-					System.out.println("| Número total de projetos: " + controllerProject.projects.size()
-					+ "                                 |");
-					System.out.println("| Número de produções acadêmicas:                             |" + "\n| - publicações: " 
-					+ controllerAcademic.publications.size() 
-					+ "                                            |" + "\n| - orientações: " + controllerAcademic.orientations.size() + "                                            |");
-					System.out.println("#-------------------------------------------------------------#");
-					System.out.println("Pressione ENTER para continuar.");
-					sc.nextLine();
-					sc.nextLine();
-					break;
-				case 0:
-					sair = true;
-					break;
+			try {
+				Utility.clearScreen();
+				Menu.showMenu();
+				option = Integer.parseInt(sc.nextLine());
+				switch(option) {
+					case 1:
+						controllerCollaborator.register();
+						break;
+					case 2:
+						controllerProject.register();
+						break;
+					case 3:
+					    controllerAcademic.register(controllerCollaborator);
+						break;	
+					case 4:
+						controllerProject.editProjectInformation();
+						break;
+					case 5:
+						controllerProject.statusChange();
+						break;
+					case 6:
+						controllerProject.allocationOfParticipants(controllerCollaborator);
+						break;
+					case 7:
+						controllerAcademic.allocationOfAuthors(controllerCollaborator);
+						break;
+					case 8:
+						controllerProject.associatePublication(controllerAcademic);;
+						break;
+					case 9: 
+						controllerProject.removeCollaborator(controllerCollaborator);
+						break;
+					case 10: 
+						controllerCollaborator.consultCollaborator();
+						break;
+					case 11:
+						controllerProject.consultProject();
+						break;
+					case 12:
+						System.out.println("#----------- Relatório de produções do laboratório -----------#");
+						System.out.println("| Número de colaboradores: " + controllerCollaborator.collaborators.size() 
+						+ "                                  |");
+						System.out.println("| Número de projetos em elaboração: " + controllerProject.numberOfInPreparation()
+						+ "                         |");
+						System.out.println("| Número de projetos em andamento: " + controllerProject.numberOfInProcess()
+						+ "                          |");
+						System.out.println("| Número de projetos concluídos: " + controllerProject.numberOfConcluded() 
+						+ "                            |");
+						System.out.println("| Número total de projetos: " + controllerProject.projects.size()
+						+ "                                 |");
+						System.out.println("| Número de produções acadêmicas:                             |" + "\n| - publicações: " 
+						+ controllerAcademic.publications.size() 
+						+ "                                            |" + "\n| - orientações: " + controllerAcademic.orientations.size() + "                                            |");
+						System.out.println("#-------------------------------------------------------------#");
+						Utility.enter();
+						break;
+					case 0:
+						sair = true;
+						break;
+					default:
+					    System.out.println("\nErro: Opção inválida.");
+					    Utility.enter();
+				}
+			}
+			catch(NumberFormatException e) {
+				System.out.println("\nErro: Opção inválida.");
+				Utility.enter();
 			}
 		}
+		
 	}	
 }
