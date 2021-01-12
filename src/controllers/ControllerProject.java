@@ -25,28 +25,33 @@ public class ControllerProject {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
 	protected ArrayList<Project> projects = new ArrayList<Project>();
+	
+	public Project createProject() throws DomainException, ParseException {
+		System.out.print("Título: ");
+		String title = sc.nextLine();
+		System.out.print("Data de início (dd/MM/yyyy): ");
+		Date start = sdf.parse(sc.nextLine());
+		System.out.print("Data de término (dd/MM/yyyy): ");
+		Date finish = sdf.parse(sc.nextLine());
+		System.out.print("Agência financiadora: ");
+		String agency = sc.nextLine();
+		System.out.print("Valor financiado: ");
+		double amount = Double.parseDouble(sc.nextLine());
+		System.out.print("Objetivo: ");
+		String objective = sc.nextLine();
+		System.out.print("Descrição: ");
+		String description = sc.nextLine();
+		int id = rd.nextInt(1000);
+		while(haveId(id)) {
+			id = rd.nextInt();
+		}
+		Project project = new Project(id, title, start, finish, agency, amount, objective, description, StatusProject.IN_PREPARATION);
+		return project;
+	}
 
 	public void register(){
 		try {
-			System.out.print("Título: ");
-			String title = sc.nextLine();
-			System.out.print("Data de início (dd/MM/yyyy): ");
-			Date start = sdf.parse(sc.nextLine());
-			System.out.print("Data de término (dd/MM/yyyy): ");
-			Date finish = sdf.parse(sc.nextLine());
-			System.out.print("Agência financiadora: ");
-			String agency = sc.nextLine();
-			System.out.print("Valor financiado: ");
-			double amount = Double.parseDouble(sc.nextLine());
-			System.out.print("Objetivo: ");
-			String objective = sc.nextLine();
-			System.out.print("Descrição: ");
-			String description = sc.nextLine();
-			int id = rd.nextInt(1000);
-			while(haveId(id)) {
-				id = rd.nextInt();
-			}
-			Project project = new Project(id, title, start, finish, agency, amount, objective, description, StatusProject.IN_PREPARATION);
+			Project project = createProject();
 			projects.add(project);
 			System.out.println(project);
 			System.out.println("\nO projeto foi cadastrado com sucesso!");
@@ -72,22 +77,11 @@ public class ControllerProject {
 			int id = Integer.parseInt(sc.nextLine());
 			checkId(id);
 			Project project = findProject(id);
-			System.out.print("Título: ");
-			String title = sc.nextLine();
-			System.out.print("Data de início (dd/MM/yyyy): ");
-			Date start = sdf.parse(sc.nextLine());
-			System.out.print("Data de término (dd/MM/yyyy): ");
-			Date finish = sdf.parse(sc.nextLine());
-			System.out.print("Agência financiadora: ");
-			String agency = sc.nextLine();
-			System.out.print("Valor financiado: ");
-			double amount = Double.parseDouble(sc.nextLine());
-			System.out.print("Objetivo: ");
-			String objective = sc.nextLine();
-			System.out.print("Descrição: ");
-			String description = sc.nextLine();
-			project.setEditionInProject(title, start, finish, agency, amount, objective, description);
-			System.out.println(project);
+			Project editedProject = createProject();
+			editedProject.setId(id);
+			editedProject.setStatus(project.getStatus());
+			projects.set(indexProject(project), editedProject);
+			System.out.println(editedProject);
 			System.out.println("\nOs dados do projeto foram alterados.");
 		}
 		catch(DomainException e) {
@@ -446,6 +440,17 @@ public class ControllerProject {
 			return true;
 		}
 		throw new DomainException("Opção inválida.");
+	}
+	
+	public int indexProject(Project project) {
+		int i = 0;
+		for(Project p : projects) {
+			if(p.equals(project)) {
+				return i;
+			}
+			i++;
+		}
+		return 0;
 	}
 	
 	public void print() {

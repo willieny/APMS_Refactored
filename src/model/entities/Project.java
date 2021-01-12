@@ -137,17 +137,6 @@ public class Project implements Comparable<Project>{
 		publications.remove(publication);
 	}
 	
-	public void setEditionInProject(String title, Date start, Date finish, String fundingAgency, Double amount, String objective,
-			String description) {
-		setTitle(title);
-		setStart(start);
-		setFinish(finish);
-		setFundingAgency(fundingAgency);
-		setAmount(amount);
-		setObjective(objective);
-		setDescription(description);	
-	}
-	
 	@Override
 	public String toString() {
 		return "\nid: " + getId()+ "\nTítulo: " + getTitle() + "\nData de início: " + sdf.format(start) + "\nData de término: " + sdf.format(finish)

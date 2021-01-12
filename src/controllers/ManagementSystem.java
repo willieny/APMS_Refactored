@@ -56,21 +56,7 @@ public class ManagementSystem {
 						controllerProject.consultProject();
 						break;
 					case 12:
-						System.out.println("#----------- Relatório de produções do laboratório -----------#");
-						System.out.println("| Número de colaboradores: " + controllerCollaborator.collaborators.size() 
-						+ "                                  |");
-						System.out.println("| Número de projetos em elaboração: " + controllerProject.numberOfInPreparation()
-						+ "                         |");
-						System.out.println("| Número de projetos em andamento: " + controllerProject.numberOfInProcess()
-						+ "                          |");
-						System.out.println("| Número de projetos concluídos: " + controllerProject.numberOfConcluded() 
-						+ "                            |");
-						System.out.println("| Número total de projetos: " + controllerProject.projects.size()
-						+ "                                 |");
-						System.out.println("| Número de produções acadêmicas:                             |" + "\n| - publicações: " 
-						+ controllerAcademic.publications.size() 
-						+ "                                            |" + "\n| - orientações: " + controllerAcademic.orientations.size() + "                                            |");
-						System.out.println("#-------------------------------------------------------------#");
+						printReport();
 						Utility.enter();
 						break;
 					case 0:
@@ -88,4 +74,21 @@ public class ManagementSystem {
 		}
 		
 	}	
+	public void printReport() {
+		System.out.println("#----------- Relatório de produções do laboratório -----------#");
+		System.out.println("| Número de colaboradores: " + controllerCollaborator.collaborators.size() 
+		+ "                                  |");
+		System.out.println("| Número de projetos em elaboração: " + controllerProject.numberOfInPreparation()
+		+ "                         |");
+		System.out.println("| Número de projetos em andamento: " + controllerProject.numberOfInProcess()
+		+ "                          |");
+		System.out.println("| Número de projetos concluídos: " + controllerProject.numberOfConcluded() 
+		+ "                            |");
+		System.out.println("| Número total de projetos: " + controllerProject.projects.size()
+		+ "                                 |");
+		System.out.println("| Número de produções acadêmicas:                             |" + "\n| - publicações: " 
+		+ controllerAcademic.publications.size() 
+		+ "                                            |" + "\n| - orientações: " + controllerAcademic.orientations.size() + "                                            |");
+		System.out.println("#-------------------------------------------------------------#");
+	}
 }
