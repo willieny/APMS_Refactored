@@ -74,25 +74,19 @@ public class ControllerProject {
 			Project project = findProject(id);
 			System.out.print("Título: ");
 			String title = sc.nextLine();
-			project.setTitle(title);
 			System.out.print("Data de início (dd/MM/yyyy): ");
 			Date start = sdf.parse(sc.nextLine());
-			project.setStart(start);
 			System.out.print("Data de término (dd/MM/yyyy): ");
 			Date finish = sdf.parse(sc.nextLine());
-			project.setFinish(finish);
 			System.out.print("Agência financiadora: ");
 			String agency = sc.nextLine();
-			project.setFundingAgency(agency);
 			System.out.print("Valor financiado: ");
 			double amount = Double.parseDouble(sc.nextLine());
-			project.setAmount(amount);
 			System.out.print("Objetivo: ");
 			String objective = sc.nextLine();
-			project.setObjective(objective);
 			System.out.print("Descrição: ");
 			String description = sc.nextLine();
-			project.setDescription(description);
+			project.setEditionInProject(title, start, finish, agency, amount, objective, description);
 			System.out.println(project);
 			System.out.println("\nOs dados do projeto foram alterados.");
 		}
@@ -252,34 +246,8 @@ public class ControllerProject {
 			Project project = findProject(id);
 			SortByDate.sortPublication(project.getPublications());
 			System.out.println(project + "\n");
-			if(project.getCollaborators().size()>0) {
-				int k=1;
-				System.out.println("------------------------------------");
-				for(int i=0; i<project.getCollaborators().size(); i++) {
-					System.out.print("Colaborador #" + k);
-					System.out.println(project.getCollaborators().get(i) + "\n");
-					k++;
-				}
-				System.out.println("------------------------------------");
-			}else {
-				System.out.println("------------------------------------");
-				System.out.println("Sem colaboradores.");
-				System.out.println("------------------------------------");
-			}
-			if(project.getPublications().size()>0) {
-				int l=1;
-				System.out.println("------------------------------------");
-				for(int i=0; i<project.getPublications().size(); i++) {
-					System.out.print("Publicação #" + l);
-					System.out.println(project.getPublications().get(i) + "\n");
-					l++;
-				}
-				System.out.println("------------------------------------");
-			}else {
-				System.out.println("------------------------------------");
-				System.out.println("Sem publicações.");
-				System.out.println("------------------------------------");
-			}
+			printInConsultCollaborator(project);
+			printInConsultPublication(project);
 		}
 		catch(DomainException e) {
 			System.out.println("\nErro: " + e.getMessage());
@@ -289,6 +257,40 @@ public class ControllerProject {
 		}
 		finally {
 			Utility.enter();
+		}
+	}
+	
+	public void printInConsultCollaborator(Project project) {
+		if(project.getCollaborators().size()>0) {
+			int k=1;
+			System.out.println("------------------------------------");
+			for(int i=0; i<project.getCollaborators().size(); i++) {
+				System.out.print("Colaborador #" + k);
+				System.out.println(project.getCollaborators().get(i) + "\n");
+				k++;
+			}
+			System.out.println("------------------------------------");
+		}else {
+			System.out.println("------------------------------------");
+			System.out.println("Sem colaboradores.");
+			System.out.println("------------------------------------");
+		}
+	}
+	
+	public void printInConsultPublication(Project project) {
+		if(project.getPublications().size()>0) {
+			int l=1;
+			System.out.println("------------------------------------");
+			for(int i=0; i<project.getPublications().size(); i++) {
+				System.out.print("Publicação #" + l);
+				System.out.println(project.getPublications().get(i) + "\n");
+				l++;
+			}
+			System.out.println("------------------------------------");
+		}else {
+			System.out.println("------------------------------------");
+			System.out.println("Sem publicações.");
+			System.out.println("------------------------------------");
 		}
 	}
 	
@@ -307,7 +309,6 @@ public class ControllerProject {
 			project.removeCollaborator(collaborator);
 			collaborator.removeProject(project);
 			System.out.println("\nColaborador foi removido.");
-			
 		}
 		catch(DomainException e) {
 			System.out.println("\nErro: " + e.getMessage());
