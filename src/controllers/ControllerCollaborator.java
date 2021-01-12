@@ -79,52 +79,9 @@ public class ControllerCollaborator {
 			SortByDate.sortProject(collaborator.getProject());
 			SortByDate.sortPublication(collaborator.getPublications());
 			System.out.println(collaborator + "\n");
-			if(collaborator.getProject().size() > 0) {
-				int k=1;
-				System.out.println("------------------------------------");
-				for(int i=0; i<collaborator.getProject().size(); i++) {
-					System.out.print("Projeto #" + k);
-					System.out.println(collaborator.getProject().get(i) + "\n");
-					k++;
-				}
-				System.out.println("------------------------------------");
-			}else {
-				System.out.println("------------------------------------");
-				System.out.println("Sem projetos.");
-				System.out.println("------------------------------------");
-			}
-			if(collaborator.getPublications().size() > 0) {
-				int l=1;
-				System.out.println("------------------------------------");
-				for(int i=0; i<collaborator.getPublications().size(); i++) {
-					System.out.print("Publicação #" + l);
-					System.out.println(collaborator.getPublications().get(i) + "\n");
-					l++;
-				}
-				System.out.println("------------------------------------");
-			}else {
-				System.out.println("------------------------------------");
-				System.out.println("Sem publicações.");
-				System.out.println("------------------------------------");
-			}
-
-			if(collaborator instanceof Teacher) {
-				Teacher teacher = (Teacher)collaborator;
-				if(teacher.getOrientations().size() > 0) {
-					int m=1;
-					System.out.println("------------------------------------");
-					for(int i=0; i<teacher.getOrientations().size(); i++) {
-						System.out.print("Orientação #" + m);
-						System.out.println(teacher.getOrientations().get(i) + "\n");
-						m++;
-					}
-					System.out.println("------------------------------------");
-				}else {
-					System.out.println("------------------------------------");
-					System.out.println("Sem orientações.");
-					System.out.println("------------------------------------");
-				}
-			}
+			printInConsultCollaborator(collaborator);
+			printInConsultPublication(collaborator);
+			printInConsultOrientation(collaborator);
 		}
 		catch(DomainException e) {
 			System.out.println("\nErro: " + e.getMessage());
@@ -134,6 +91,60 @@ public class ControllerCollaborator {
 		}
 		finally {
 			Utility.enter();
+		}
+	}
+	
+	public void printInConsultCollaborator(Collaborator collaborator) {
+		if(collaborator.getProject().size() > 0) {
+			int k=1;
+			System.out.println("------------------------------------");
+			for(int i=0; i<collaborator.getProject().size(); i++) {
+				System.out.print("Projeto #" + k);
+				System.out.println(collaborator.getProject().get(i) + "\n");
+				k++;
+			}
+			System.out.println("------------------------------------");
+		}else {
+			System.out.println("------------------------------------");
+			System.out.println("Sem projetos.");
+			System.out.println("------------------------------------");
+		}
+	}
+	
+	public void printInConsultPublication(Collaborator collaborator) {
+		if(collaborator.getPublications().size() > 0) {
+			int l=1;
+			System.out.println("------------------------------------");
+			for(int i=0; i<collaborator.getPublications().size(); i++) {
+				System.out.print("Publicação #" + l);
+				System.out.println(collaborator.getPublications().get(i) + "\n");
+				l++;
+			}
+			System.out.println("------------------------------------");
+		}else {
+			System.out.println("------------------------------------");
+			System.out.println("Sem publicações.");
+			System.out.println("------------------------------------");
+		}
+	}
+	
+	public void printInConsultOrientation(Collaborator collaborator) {
+		if(collaborator instanceof Teacher) {
+			Teacher teacher = (Teacher)collaborator;
+			if(teacher.getOrientations().size() > 0) {
+				int m=1;
+				System.out.println("------------------------------------");
+				for(int i=0; i<teacher.getOrientations().size(); i++) {
+					System.out.print("Orientação #" + m);
+					System.out.println(teacher.getOrientations().get(i) + "\n");
+					m++;
+				}
+				System.out.println("------------------------------------");
+			}else {
+				System.out.println("------------------------------------");
+				System.out.println("Sem orientações.");
+				System.out.println("------------------------------------");
+			}
 		}
 	}
 	

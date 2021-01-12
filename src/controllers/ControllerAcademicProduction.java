@@ -30,35 +30,12 @@ public class ControllerAcademicProduction {
 			Menu.showMenuAcademicProduction();
 			int type = Integer.parseInt(sc.nextLine());
 			checkType(type);
-			System.out.print("Título: ");
-			String title = sc.nextLine();
-			int id = rd.nextInt(1000);
 			switch(type) {
 				case 1: 
-					while(haveIdPublication(id)) {
-						id = rd.nextInt();
-					}
-					System.out.print("Conferência onde foi publicada: ");
-					String conference = sc.nextLine();
-					System.out.print("Ano de publicação: ");
-					Date year = sdf.parse(sc.nextLine());
-					Publication publication = new Publication(id, title, conference, year);
-					publications.add(publication);
-					System.out.println("\nPublicação foi cadastrada com sucesso!");
+					register_publication(controllerCollaborator);
 					break;
 				case 2:
-					while(haveIdPublication(id)) {
-						id = rd.nextInt();
-					}
-					controllerCollaborator.print();
-					System.out.print("Id do professor: ");
-					int idP = Integer.parseInt(sc.nextLine());
-					controllerCollaborator.checkId(idP);
-					Teacher teacher = (Teacher)controllerCollaborator.findTeacher(idP);
-					Orientation orientation = new Orientation(id, title, teacher);
-					orientations.add(orientation);
-					teacher.addOrientation(orientation);
-					System.out.println("\nOrientação foi cadastrada com sucesso!");
+					register_orientation(controllerCollaborator);
 					break;
 			}
 		}
@@ -76,53 +53,51 @@ public class ControllerAcademicProduction {
 		}
 	}
 	
+	public void register_publication(ControllerCollaborator controllerCollaborator) throws ParseException {
+		System.out.print("Título: ");
+		String title = sc.nextLine();
+		int id = rd.nextInt(1000);
+		while(haveIdPublication(id)) {
+			id = rd.nextInt();
+		}
+		System.out.print("Conferência onde foi publicada: ");
+		String conference = sc.nextLine();
+		System.out.print("Ano de publicação: ");
+		Date year = sdf.parse(sc.nextLine());
+		Publication publication = new Publication(id, title, conference, year);
+		publications.add(publication);
+		System.out.println("\nPublicação foi cadastrada com sucesso!");
+	}
+	
+	public void register_orientation(ControllerCollaborator controllerCollaborator) throws DomainException {
+		System.out.print("Título: ");
+		String title = sc.nextLine();
+		int id = rd.nextInt(1000);
+		while(haveIdOrientation(id)) {
+			id = rd.nextInt();
+		}
+		controllerCollaborator.print();
+		System.out.print("Id do professor: ");
+		int idP = Integer.parseInt(sc.nextLine());
+		controllerCollaborator.checkId(idP);
+		Teacher teacher = (Teacher)controllerCollaborator.findTeacher(idP);
+		Orientation orientation = new Orientation(id, title, teacher);
+		orientations.add(orientation);
+		teacher.addOrientation(orientation);
+		System.out.println("\nOrientação foi cadastrada com sucesso!");
+	}
+	
 	public void allocationOfAuthors(ControllerCollaborator controllerCollaborator) {		
 		try {
 			Menu.showMenuAcademicProduction();
 			int type = Integer.parseInt(sc.nextLine());
 			checkType(type);
 			switch(type) {
-				case 1:
-					printPublications();
-					break;
-				case 2:
-					printOrientations();
-					break;
-			}
-			controllerCollaborator.print();
-			System.out.print("Id da produção acadêmica: ");
-			int id = Integer.parseInt(sc.nextLine());
-			switch(type) {
 			case 1:
-				checkIdPublication(id);
+				authorsInPublication(controllerCollaborator);
 				break;
 			case 2:
-				checkIdOrientation(id);
-				break;
-			}
-			System.out.print("Id do colaborador a ser alocado: ");
-			int idC = Integer.parseInt(sc.nextLine());
-			controllerCollaborator.checkId(idC);
-			Collaborator collaborator = controllerCollaborator.findCollaborator(idC);
-			switch(type) {
-			case 1:
-				Publication publication = findPublication(id);
-				if(haveAuthorPublication(publication, idC)) {
-					System.out.println("\nAutor já está alocado.");
-				}else {
-					publication.addAuthor(collaborator);
-					collaborator.addPublication(publication);
-					System.out.println("\nAutor foi alocado na publicação.");
-				}
-				break;
-			case 2:
-				Orientation orientation = findOrientation(id);
-				if(haveAuthorOrientation(orientation, idC) || haveTeacher(orientation, idC)) {
-					System.out.println("\nAutor já está alocado.");
-				}else {
-					orientation.addAuthor(collaborator);
-					System.out.println("\nAutor foi alocado na orientação.");
-				}
+				authorsInOrientation(controllerCollaborator);
 				break;
 			}
 		}
@@ -134,6 +109,45 @@ public class ControllerAcademicProduction {
 		}
 		finally {
 			Utility.enter();
+		}
+	}
+	
+	public void authorsInPublication(ControllerCollaborator controllerCollaborator) throws DomainException {
+		printPublications();
+		controllerCollaborator.print();
+		System.out.print("Id da publicação: ");
+		int id = Integer.parseInt(sc.nextLine());
+		checkIdPublication(id);
+		System.out.print("Id do colaborador a ser alocado: ");
+		int idC = Integer.parseInt(sc.nextLine());
+		controllerCollaborator.checkId(idC);
+		Collaborator collaborator = controllerCollaborator.findCollaborator(idC);
+		Publication publication = findPublication(id);
+		if(haveAuthorPublication(publication, idC)) {
+			System.out.println("\nAutor já está alocado.");
+		}else {
+			publication.addAuthor(collaborator);
+			collaborator.addPublication(publication);
+			System.out.println("\nAutor foi alocado na publicação.");
+		}
+	}
+	
+	public void authorsInOrientation(ControllerCollaborator controllerCollaborator) throws DomainException {
+		printOrientations();
+		controllerCollaborator.print();
+		System.out.print("Id da orientação: ");
+		int id = Integer.parseInt(sc.nextLine());
+		checkIdOrientation(id);
+		System.out.print("Id do colaborador a ser alocado: ");
+		int idC = Integer.parseInt(sc.nextLine());
+		controllerCollaborator.checkId(idC);
+		Collaborator collaborator = controllerCollaborator.findCollaborator(idC);
+		Orientation orientation = findOrientation(id);
+		if(haveAuthorOrientation(orientation, idC) || haveTeacher(orientation, idC)) {
+			System.out.println("\nAutor já está alocado.");
+		}else {
+			orientation.addAuthor(collaborator);
+			System.out.println("\nAutor foi alocado na orientação.");
 		}
 	}
 	
