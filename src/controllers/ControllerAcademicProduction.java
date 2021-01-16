@@ -32,10 +32,10 @@ public class ControllerAcademicProduction {
 			checkType(type);
 			switch(type) {
 				case 1: 
-					register_publication(controllerCollaborator);
+					registerPublication();
 					break;
 				case 2:
-					register_orientation(controllerCollaborator);
+					registerOrientation(controllerCollaborator);
 					break;
 			}
 		}
@@ -53,7 +53,7 @@ public class ControllerAcademicProduction {
 		}
 	}
 	
-	public void register_publication(ControllerCollaborator controllerCollaborator) throws ParseException {
+	public void registerPublication() throws ParseException {
 		System.out.print("Título: ");
 		String title = sc.nextLine();
 		int id = rd.nextInt(1000);
@@ -69,7 +69,7 @@ public class ControllerAcademicProduction {
 		System.out.println("\nPublicação foi cadastrada com sucesso!");
 	}
 	
-	public void register_orientation(ControllerCollaborator controllerCollaborator) throws DomainException {
+	public void registerOrientation(ControllerCollaborator controllerCollaborator) throws DomainException {
 		System.out.print("Título: ");
 		String title = sc.nextLine();
 		int id = rd.nextInt(1000);
