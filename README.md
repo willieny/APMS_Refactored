@@ -34,34 +34,34 @@ O método enter() foi obtido utilizando o padrão **Extract Method**.
 
 Você tem um fragmento de código que pode ser agrupado.
 
-- Duplicação de Código
+#### Duplicação de Código
 
-#### Problema 1
+- Problema 1
 
 O seguinte fragmento era encontrado em diversos métodos das classes ControllerCollaborator, ControllerProject e ControlerAcademicProduction:
 
-'''
+```
 System.out.println("Pressione ENTER para continuar.");
 sc.nextLine();
-'''
+```
 
-#### Solução 1
+- Solução 1
 
 Foi criado um novo método chamado enter() e adicionado o fragmento de código anterior. Dessa forma, no local onde havia a duplicação de código foi feita uma chamada ao novo método. 
 
-#### Problema 2
+- Problema 2
 
 Os métodos register() e editProjectInformation() têm uma parte das suas linhas de código destinadas a ler dados de entrada. Contudo, essas linhas de código são iguais. 
 
-#### Solução 2
+- Solução 2
 
 Foi criado um novo método chamado createProject() e adicionado o fragmento de código duplicado. Dessa forma, no local onde havia a duplicação de código foi feita uma chamada ao novo método e o método editProjectInformation() precisou de algumas alterações nas demais linhas de código. 
 
-- Long Method
+#### Long Method
 
-#### Problema 1
+- Problema 1
 
-#### Solução 1
+- Solução 1
 
 
 ## Diagrama UML
