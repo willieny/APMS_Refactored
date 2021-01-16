@@ -4,43 +4,69 @@ Projeto da disciplina de Projeto de Software (Projeto OO)
 
 ## Sobre
 
-Esta aplicação trata-se de um sistema de gestão de produtividade acadêmica que objetiva o gerenciamento da produção acadêmica de um laboratório de pesquisa, incluindo informações sobre projetos de pesquisa e colaboradores. O administrador do sistema é o usuário responsável pela manutenção de todas as informações do sistema. Nesta aplicação, o administrador não precisa fazer cadastro para gerenciar o sistema.
-  
-  + Um laboratório de pesquisa é formado por colaboradores: alunos de graduação, alunos de mestrado, alunos de doutorado, professores e pesquisadores.
-  
-  + Os colaboradores de um laboratório podem ser alocados em projetos. Projetos possuem as seguintes informações básicas: título, data de início, data de término, agência financiadora, valor financiado, objetivo, descrição e participantes. Um projeto de pesquisa deve ter pelo menos um professor como participante.
-  
-  + Os colaboradores de um laboratório possuem dois tipos de produção acadêmica: publicações e orientações. Todos os colaboradores podem ter publicações, porém somente os professores podem ter orientações. Uma publicação é produzida por um ou mais autores. As orientações devem ser feitas por professores, os quais devem orientar alunos do laboratório.
-  
-  + O status inicial do projeto é "Em elaboração". Se constarem todas as informações básicas sobre o projeto, então o seu status poderá ser alterado para "Em andamento". Após isso, o status poderá ser alterado para "Concluído", porém somente se houver uma ou mais publicações associadas ao projeto.
-  
-  + Uma publicação só poderá ser associada a um projeto quando o status do projeto estiver “Em andamento”.
-  
-  + A alocação deve ser permitida apenas quando o projeto estiver “Em elaboração”. Para fazer a alocação de colaboradores é necessário que exista pelo menos um professor alocado no projeto. 
-  
-  + Um aluno de graduação não pode participar de mais de dois projetos "Em andamento”.
-  
-Operações que o administrador poderá realizar:
+Esta aplicação trata-se do refatoramento de um sistema de gestão de produtividade acadêmica no qual foi realizado o tratamento de exceções e a implementação de pelo menos dois padrões de projeto.
+Para mais informações sobre o projeto mencionado => [Sistema de Gestão de Produtividade Acadêmica](https://github.com/willieny/Academic_Productivity_Management_System)
 
-Operação | Nome da operação | Descrição da operação
-------------- | ------------- | -------------------
-1 | Cadastrar colaborador | Adiciona os dados de um colaborador
-2 | Cadastrar projeto | Adiciona os dados de um projeto
-3 | Cadastrar produção acadêmica | Adiciona os dados de uma produção acadêmica
-4 | Editar as informações básicas de um projeto | Ajusta as informações presentes em um projeto
-5 | Alterar status do projeto | Consiste em trocar o status do projeto
-6 | Alocar participantes a um projeto | Adiciona um participante em um projeto 
-7 | Alocar autores a uma produção acadêmica | Adiciona um autor em uma produção acadêmica
-8 | Associar produção acadêmica a um projeto | Adiciona uma produção acadêmica em um projeto
-9 | Remover colaborador de um projeto | Consiste em remover um participante de um projeto
-10 | Consultar colaborador | Exibe todas as informações de um colaborador incluindo os projetos e as produções acadêmicas que faz parte
-11 | Consultar projeto | Exibe todas as informações de um projeto incluindo os participantes e as produções acadêmicas associados
-12 | Relatório de produções do laboratório | Exibe a quantidade de colaboradores, projetos e produções acadêmicas presentes no laboratório
-0 | Sair | Sai da aplicação
+## Refatoramento
+
+- [x] Tratamento de Exceções
+- [x] Padrão de Projeto 1 [Extract Class]
+- [x] Padrão de Projeto 2 [Extract Method]
+
+### Extract Class
+
+Quando uma classe faz o trabalho de duas, resulta em estranheza.
+
+#### Problema
+
+![image](https://user-images.githubusercontent.com/32077255/104792467-509e1d00-577d-11eb-921e-0019c23dac04.png)
+
+A classe Menu possui o método clearScreen() que não condiz com a sua função.
+
+#### Solução
+
+![image](https://user-images.githubusercontent.com/32077255/104792436-2c424080-577d-11eb-94d7-7fb83bc120e3.png)
+
+Foi criada uma nova classe chamada Utility e em seguida adicionado o método clearScreen(). 
+O método enter() foi obtido utilizando o padrão **Extract Method**.
+
+### Extract Method
+
+Você tem um fragmento de código que pode ser agrupado.
+
+- Duplicação de Código
+
+#### Problema 1
+
+O seguinte fragmento era encontrado em diversos métodos das classes ControllerCollaborator, ControllerProject e ControlerAcademicProduction:
+
+'''
+System.out.println("Pressione ENTER para continuar.");
+sc.nextLine();
+'''
+
+#### Solução 1
+
+Foi criado um novo método chamado enter() e adicionado o fragmento de código anterior. Dessa forma, no local onde havia a duplicação de código foi feita uma chamada ao novo método. 
+
+#### Problema 2
+
+Os métodos register() e editProjectInformation() têm uma parte das suas linhas de código destinadas a ler dados de entrada. Contudo, essas linhas de código são iguais. 
+
+#### Solução 2
+
+Foi criado um novo método chamado createProject() e adicionado o fragmento de código duplicado. Dessa forma, no local onde havia a duplicação de código foi feita uma chamada ao novo método e o método editProjectInformation() precisou de algumas alterações nas demais linhas de código. 
+
+- Long Method
+
+#### Problema 1
+
+#### Solução 1
+
 
 ## Diagrama UML
 
-![Screenshot_2](https://user-images.githubusercontent.com/32077255/101590835-f1086100-39c9-11eb-84cc-1995be01bd19.png)
+![Academic Productivity Management System vpd](https://user-images.githubusercontent.com/32077255/104078217-b4fc3200-51fb-11eb-8932-cf35df369e51.png)
 
 ## Nota
 
@@ -50,4 +76,3 @@ public static void clearScreen() {
 	System.out.println("\033[H\033[2J");
 	System.out.flush();
 }
-
