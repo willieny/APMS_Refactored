@@ -26,6 +26,18 @@ public class ControllerProject {
 	
 	protected ArrayList<Project> projects = new ArrayList<Project>();
 	
+	private ControllerProject() {
+	}
+	
+	protected static ControllerProject instance = null;
+	
+	public static ControllerProject getInstance() {
+		if(instance == null) {
+			instance = new ControllerProject();
+		}
+		return instance;
+	}
+	
 	public Project createProject() throws DomainException, ParseException {
 		System.out.print("Título: ");
 		String title = sc.nextLine();
@@ -111,29 +123,21 @@ public class ControllerProject {
 			checkType(type);
 			switch(type) {
 				case 1:
-					if(checkInformation(project)) {
-						System.out.println("\nInformações básicas incompletas.");
+					checkInformation(project);
+					if(project.getStatus() == StatusProject.IN_PREPARATION) {
+						studentMore2InProgress(project);
+						project.setStatus(StatusProject.IN_PROCESS);
+						System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
 					}
-					else {
-						if(project.getStatus() == StatusProject.IN_PREPARATION) {
-							if(studentMore2InProgress(project)) {
-								System.out.println("\nO estudante do Id:" + IdStudentMore2InProgress(project) + " possui 2 projetos \"Em andamento\". "
-										+ "\nPara alterar o status do projeto atual é necessário que remova o estudante especificado.");
-							}else {
-								project.setStatus(StatusProject.IN_PROCESS);
-								System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
-							}
+					else if(project.getStatus() == StatusProject.IN_PROCESS) {
+						if(project.getPublications().size() > 0) {
+							project.setStatus(StatusProject.CONCLUDED);
+							System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
+						}else {
+							System.out.println("\nNão é possível alterar status do projeto para \"Concluído\". "
+									+ "\nAssocie pelo menos uma publicação ao projeto.");
 						}
-						else if(project.getStatus() == StatusProject.IN_PROCESS) {
-							if(project.getPublications().size() > 0) {
-								project.setStatus(StatusProject.CONCLUDED);
-								System.out.println("\nNovo status: " + project.getStatus().getStatusProject());
-							}else {
-								System.out.println("\nNão é possível alterar status do projeto para \"Concluído\". "
-										+ "\nAssocie pelo menos uma publicação ao projeto.");
-							}
-						}	
-					}
+					}	
 					break;
 				case 0:
 					System.out.println("O programa irá retornar para o menu inicial.");
@@ -163,31 +167,23 @@ public class ControllerProject {
 			int idc = Integer.parseInt(sc.nextLine());
 			controllerCollaborator.checkId(idc);
 			Project project = findProject(id);
-			if(project.getStatus() == StatusProject.IN_PREPARATION) {
-				Collaborator collaborator = controllerCollaborator.findCollaborator(idc);
-				if(haveCollarator(project, idc)) {
-					System.out.println("\nColaborador já está alocado.");
-				}else {
-					if(project.getCollaborators().isEmpty()) {
-						if(controllerCollaborator.isTeacher(collaborator)) {
-							project.addCollaborator(collaborator);	
-							collaborator.addProject(project);
-							System.out.println("\nColaborador foi alocado no projeto.");
-						}
-						else {
-							System.out.println("\nO projeto não possui professores alocados. Adicione pelo menos um.");
-						}
-					}
-					else {
-						project.addCollaborator(collaborator);
-						collaborator.addProject(project);
-						System.out.println("\nColaborador foi alocado no projeto.");
-					}
+			checkInPreparation(project);
+			Collaborator collaborator = controllerCollaborator.findCollaborator(idc);
+			if(haveCollarator(project, idc)) {
+				System.out.println("\nColaborador já está alocado.");
+			}else {
+				if(project.getCollaborators().isEmpty()) {
+					controllerCollaborator.isTeacher(collaborator);
+					project.addCollaborator(collaborator);	
+					collaborator.addProject(project);
+					System.out.println("\nColaborador foi alocado no projeto.");
+				}
+				else {
+					project.addCollaborator(collaborator);
+					collaborator.addProject(project);
+					System.out.println("\nColaborador foi alocado no projeto.");
 				}
 			}		
-			else {
-				System.out.println("\nNão é possível adicionar colaboradores depois que o status do projeto é alterado para \"Em andamento\".");
-			}
 		}
 		catch(DomainException e) {
 			System.out.println("\nErro: " + e.getMessage());
@@ -315,13 +311,14 @@ public class ControllerProject {
 		}
 	}
 	
-	public boolean studentMore2InProgress(Project project) {
+	public boolean studentMore2InProgress(Project project) throws DomainException {
 		for(Collaborator c : project.getCollaborators()) {
 			if(c instanceof Student) {
 				Student student = (Student)c;
 				if(student.getTypeStudent() == TypeStudent.GRADUATE_STUDENT) {
 					if(haveMore2(student) == 2) {
-						return true;
+						throw new DomainException("O estudante do Id:" + IdStudentMore2InProgress(project) + " possui 2 projetos \"Em andamento\"."
+								+ "\nPara alterar o status do projeto atual é necessário que remova o estudante especificado.");
 					}
 				}
 			}
@@ -410,11 +407,21 @@ public class ControllerProject {
 		return null;
 	}
 	
-	public boolean checkInformation(Project project) {
-		if(project.getFundingAgency().equals("") || project.getObjective().equals("") || project.getDescription().equals("")) {
-			return true;
+	public boolean haveId(int id){
+		for(Project p : projects) {
+			if(p.getId() == id) {
+				return true;
+		    }
 		}
 		return false;
+	}
+	
+	public boolean checkInformation(Project project) throws DomainException {
+		if(project.getFundingAgency().equals("") || project.getObjective().equals("") || project.getDescription().equals("")) {
+			throw new DomainException("Informações básicas incompletas.");
+		}
+		return false;
+		
 	}
 	
 	public boolean checkId(int id) throws DomainException {
@@ -426,20 +433,18 @@ public class ControllerProject {
 		throw new DomainException("Id do projeto inválido.");
 	}
 	
-	public boolean haveId(int id){
-		for(Project p : projects) {
-			if(p.getId() == id) {
-				return true;
-		    }
-		}
-		return false;
-	}
-	
 	public boolean checkType(int type) throws DomainException {
 		if(type == 0 || type == 1) {
 			return true;
 		}
 		throw new DomainException("Opção inválida.");
+	}
+	
+	public boolean checkInPreparation(Project project) throws DomainException {
+		if(project.getStatus() == StatusProject.IN_PREPARATION) {
+			return true;
+		}		
+		throw new DomainException("Não é possível adicionar colaboradores depois que o status do projeto é alterado para \"Em andamento\".");
 	}
 	
 	public int indexProject(Project project) {

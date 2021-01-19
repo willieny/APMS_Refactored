@@ -9,11 +9,16 @@ public class ManagementSystem {
 	
 	private static Scanner sc = new Scanner(System.in);
 	
-	private ControllerCollaborator controllerCollaborator = new ControllerCollaborator();
-	private ControllerProject controllerProject = new ControllerProject();
-	private ControllerAcademicProduction controllerAcademic = new ControllerAcademicProduction();
-	
 	public void MainSystem(){
+		ControllerProject controllerProject = null;
+		controllerProject = ControllerProject.getInstance();
+		
+		ControllerCollaborator controllerCollaborator = null;
+		controllerCollaborator = ControllerCollaborator.getInstance();
+		
+		ControllerAcademicProduction controllerAcademic = null;
+		controllerAcademic = ControllerAcademicProduction.getInstance();
+		
 		boolean sair = false;
 		int option;
 		while(!sair){
@@ -56,7 +61,21 @@ public class ManagementSystem {
 						controllerProject.consultProject();
 						break;
 					case 12:
-						printReport();
+						System.out.println("#----------- Relatório de produções do laboratório -----------#");
+						System.out.println("| Número de colaboradores: " + controllerCollaborator.collaborators.size() 
+						+ "                                  |");
+						System.out.println("| Número de projetos em elaboração: " + controllerProject.numberOfInPreparation()
+						+ "                         |");
+						System.out.println("| Número de projetos em andamento: " + controllerProject.numberOfInProcess()
+						+ "                          |");
+						System.out.println("| Número de projetos concluídos: " + controllerProject.numberOfConcluded() 
+						+ "                            |");
+						System.out.println("| Número total de projetos: " + controllerProject.projects.size()
+						+ "                                 |");
+						System.out.println("| Número de produções acadêmicas:                             |" + "\n| - publicações: " 
+						+ controllerAcademic.publications.size() 
+						+ "                                            |" + "\n| - orientações: " + controllerAcademic.orientations.size() + "                                            |");
+						System.out.println("#-------------------------------------------------------------#");
 						Utility.enter();
 						break;
 					case 0:
@@ -74,21 +93,4 @@ public class ManagementSystem {
 		}
 		
 	}	
-	public void printReport() {
-		System.out.println("#----------- Relatório de produções do laboratório -----------#");
-		System.out.println("| Número de colaboradores: " + controllerCollaborator.collaborators.size() 
-		+ "                                  |");
-		System.out.println("| Número de projetos em elaboração: " + controllerProject.numberOfInPreparation()
-		+ "                         |");
-		System.out.println("| Número de projetos em andamento: " + controllerProject.numberOfInProcess()
-		+ "                          |");
-		System.out.println("| Número de projetos concluídos: " + controllerProject.numberOfConcluded() 
-		+ "                            |");
-		System.out.println("| Número total de projetos: " + controllerProject.projects.size()
-		+ "                                 |");
-		System.out.println("| Número de produções acadêmicas:                             |" + "\n| - publicações: " 
-		+ controllerAcademic.publications.size() 
-		+ "                                            |" + "\n| - orientações: " + controllerAcademic.orientations.size() + "                                            |");
-		System.out.println("#-------------------------------------------------------------#");
-	}
 }

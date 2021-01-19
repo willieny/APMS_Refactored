@@ -1,12 +1,10 @@
 package application;
 
-import java.text.ParseException;
-
 import controllers.ManagementSystem;
 
 public class Program {
 
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) {
 		ManagementSystem system = new ManagementSystem();
 		system.MainSystem();
 	}

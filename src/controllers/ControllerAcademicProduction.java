@@ -25,6 +25,18 @@ public class ControllerAcademicProduction {
 	protected ArrayList<Publication> publications = new ArrayList<Publication>();
 	protected ArrayList<Orientation> orientations = new ArrayList<Orientation>();
 	
+	private ControllerAcademicProduction() {
+	}
+	
+	private static ControllerAcademicProduction instance = null;
+	
+	public static ControllerAcademicProduction getInstance() {
+		if(instance == null) {
+			instance = new ControllerAcademicProduction();
+		}
+		return instance;
+	}
+	
 	public void register(ControllerCollaborator controllerCollaborator){
 		try {
 			Menu.showMenuAcademicProduction();
@@ -76,10 +88,11 @@ public class ControllerAcademicProduction {
 		while(haveIdOrientation(id)) {
 			id = rd.nextInt();
 		}
-		controllerCollaborator.print();
+		controllerCollaborator.printTeacher();
 		System.out.print("Id do professor: ");
 		int idP = Integer.parseInt(sc.nextLine());
 		controllerCollaborator.checkId(idP);
+		controllerCollaborator.checkIsTeacher(idP, controllerCollaborator);
 		Teacher teacher = (Teacher)controllerCollaborator.findTeacher(idP);
 		Orientation orientation = new Orientation(id, title, teacher);
 		orientations.add(orientation);

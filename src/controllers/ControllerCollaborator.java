@@ -19,6 +19,18 @@ public class ControllerCollaborator {
 	
 	protected ArrayList<Collaborator> collaborators = new ArrayList<Collaborator>();
 	
+	private ControllerCollaborator() {
+	}
+	
+	protected static ControllerCollaborator instance = null;
+	
+	public static ControllerCollaborator getInstance() {
+		if(instance == null) {
+			instance = new ControllerCollaborator();
+		}
+		return instance;
+	}
+	
 	public void register() {
 		try {
 			Menu.showMenuCollaborator();
@@ -167,11 +179,20 @@ public class ControllerCollaborator {
 		}
 		return null;
 	}
-	public boolean isTeacher(Collaborator collaborator) {
+	
+	public boolean isTeacher(Collaborator collaborator) throws DomainException {
 		if(collaborator instanceof Teacher) {
 			return true;
 		}
-		return false;
+		throw new DomainException("O projeto não possui professores alocados. Adicione pelo menos um.");
+	}
+	
+	public boolean checkIsTeacher(int id, ControllerCollaborator cc) throws DomainException {
+		Collaborator collaborator = cc.findCollaborator(id);
+		if(collaborator instanceof Teacher) {
+			return true;
+		}
+		throw new DomainException("Colaborador não é um professor.");
 	}
 	
 	public boolean isStudent(Collaborator collaborator) {
@@ -204,6 +225,18 @@ public class ControllerCollaborator {
 			}
 		}
 		return false;
+	}
+	
+	public void printTeacher() {
+		if(collaborators.size() > 0) {
+			System.out.println("--------------Professores-----------");
+			for(Collaborator c : collaborators) {
+				if(c instanceof Teacher) {
+					System.out.println("Id: " + c.getId() + "\nNome: " + c.getName());
+					System.out.println("------------------------------------");	
+				}
+			}
+		}
 	}
 	
 	public void print() {
