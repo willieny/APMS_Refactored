@@ -22,13 +22,13 @@ public class ControllerAcademicProduction {
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
 	
-	protected ArrayList<Publication> publications = new ArrayList<Publication>();
-	protected ArrayList<Orientation> orientations = new ArrayList<Orientation>();
+	private ArrayList<Publication> publications = new ArrayList<Publication>();
+	private ArrayList<Orientation> orientations = new ArrayList<Orientation>();
+	
+	private static ControllerAcademicProduction instance = null;
 	
 	private ControllerAcademicProduction() {
 	}
-	
-	private static ControllerAcademicProduction instance = null;
 	
 	public static ControllerAcademicProduction getInstance() {
 		if(instance == null) {
@@ -37,6 +37,14 @@ public class ControllerAcademicProduction {
 		return instance;
 	}
 	
+	public ArrayList<Publication> getPublications() {
+		return publications;
+	}
+
+	public ArrayList<Orientation> getOrientations() {
+		return orientations;
+	}
+
 	public void register(ControllerCollaborator controllerCollaborator){
 		try {
 			Menu.showMenuAcademicProduction();

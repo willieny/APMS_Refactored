@@ -24,20 +24,24 @@ public class ControllerProject {
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	
-	protected ArrayList<Project> projects = new ArrayList<Project>();
+	private ArrayList<Project> projects = new ArrayList<Project>();
+	
+	private static ControllerProject instance = null;
 	
 	private ControllerProject() {
 	}
-	
-	protected static ControllerProject instance = null;
-	
+
 	public static ControllerProject getInstance() {
 		if(instance == null) {
 			instance = new ControllerProject();
 		}
 		return instance;
 	}
-	
+		
+	public ArrayList<Project> getProjects() {
+		return projects;
+	}
+
 	public Project createProject() throws DomainException, ParseException {
 		System.out.print("Título: ");
 		String title = sc.nextLine();

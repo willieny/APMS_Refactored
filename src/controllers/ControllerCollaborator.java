@@ -17,12 +17,12 @@ public class ControllerCollaborator {
 	private static Scanner sc = new Scanner(System.in);
 	private static Random rd = new Random();
 	
-	protected ArrayList<Collaborator> collaborators = new ArrayList<Collaborator>();
+	private ArrayList<Collaborator> collaborators = new ArrayList<Collaborator>();
+	
+	private static ControllerCollaborator instance = null;
 	
 	private ControllerCollaborator() {
-	}
-	
-	protected static ControllerCollaborator instance = null;
+	}	
 	
 	public static ControllerCollaborator getInstance() {
 		if(instance == null) {
@@ -31,6 +31,10 @@ public class ControllerCollaborator {
 		return instance;
 	}
 	
+	public ArrayList<Collaborator> getCollaborators() {
+		return collaborators;
+	}
+
 	public void register() {
 		try {
 			Menu.showMenuCollaborator();
